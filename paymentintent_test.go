@@ -72,10 +72,7 @@ func TestCreatePaymentIntent(t *testing.T) {
 func TestUpdateAmountPaymentIntent(t *testing.T) {
 	PaymentIntentAmount = 500
 
-	piReq := stripe.PaymentIntentParams{}
-	piReq.Amount = stripe.Int64(PaymentIntentAmount)
-
-	piRes, err := stripego.UpdateAmountPaymentIntent(StripeSK, PaymentIntentID, piReq)
+	piRes, err := stripego.UpdateAmountPaymentIntent(StripeSK, PaymentIntentID, PaymentIntentAmount)
 	if err != nil {
 		t.Errorf(
 			"got error when updating payment intent: %v", err,
