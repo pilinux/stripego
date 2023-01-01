@@ -20,9 +20,7 @@ var PaymentIntentAmount int64
 func TestCreatePaymentIntent(t *testing.T) {
 	err := stripego.Env()
 	if err != nil {
-		t.Errorf(
-			"failed to load .env: %v", err,
-		)
+		t.Errorf("failed to load .env: %v", err)
 		return
 	}
 	StripeSK = strings.TrimSpace(os.Getenv("STRIPE_SK"))
@@ -36,9 +34,7 @@ func TestCreatePaymentIntent(t *testing.T) {
 
 	piRes, err := stripego.CreatePaymentIntent(StripeSK, piReq)
 	if err != nil {
-		t.Errorf(
-			"got error when creating payment intent: %v", err,
-		)
+		t.Errorf("got error when creating payment intent: %v", err)
 		return
 	}
 	PaymentIntentID = piRes.ID
@@ -75,9 +71,7 @@ func TestUpdateAmountPaymentIntent(t *testing.T) {
 
 	piRes, err := stripego.UpdateAmountPaymentIntent(StripeSK, PaymentIntentID, PaymentIntentAmount)
 	if err != nil {
-		t.Errorf(
-			"got error when updating payment intent: %v", err,
-		)
+		t.Errorf("got error when updating payment intent: %v", err)
 		return
 	}
 
@@ -171,9 +165,7 @@ func TestUpdateMethodPaymentIntent(t *testing.T) {
 func TestCancelPaymentIntent(t *testing.T) {
 	piRes, err := stripego.CancelPaymentIntent(StripeSK, PaymentIntentID)
 	if err != nil {
-		t.Errorf(
-			"got error when canceling payment intent: %v", err,
-		)
+		t.Errorf("got error when canceling payment intent: %v", err)
 		return
 	}
 
