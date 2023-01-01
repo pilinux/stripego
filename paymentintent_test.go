@@ -8,6 +8,7 @@ import (
 
 	"github.com/pilinux/stripego"
 	"github.com/stripe/stripe-go/v74"
+	"github.com/stripe/stripe-go/v74/paymentmethod"
 )
 
 var StripeSK string
@@ -91,6 +92,62 @@ func TestUpdateAmountPaymentIntent(t *testing.T) {
 	expected.ID = PaymentIntentID
 	expected.Object = PaymentIntentObject
 	expected.Status = stripe.PaymentIntentStatusRequiresPaymentMethod
+	expected.Amount = PaymentIntentAmount
+	expected.Currency = stripe.Currency(Currency)
+
+	if res.ID != expected.ID {
+		t.Errorf("got: %v, want: %v", res.ID, expected.ID)
+	}
+	if res.Object != expected.Object {
+		t.Errorf("got: %v, want: %v", res.Object, expected.Object)
+	}
+	if res.Status != expected.Status {
+		t.Errorf("got: %v, want: %v", res.Status, expected.Status)
+	}
+	if res.Amount != expected.Amount {
+		t.Errorf("got: %v, want: %v", res.Amount, expected.Amount)
+	}
+	if res.Currency != expected.Currency {
+		t.Errorf("got: %v, want: %v", res.Currency, expected.Currency)
+	}
+}
+
+func TestUpdateMethodPaymentIntent(t *testing.T) {
+	// test with card
+	card := &stripe.PaymentMethodParams{
+		Type: stripe.String(string(stripe.PaymentMethodTypeCard)),
+		Card: &stripe.PaymentMethodCardParams{
+			Number:   stripe.String("4242424242424242"),
+			ExpMonth: stripe.Int64(12),
+			ExpYear:  stripe.Int64(2023),
+			CVC:      stripe.String("123"),
+		},
+	}
+
+	// create a payment method
+	pm, err := paymentmethod.New(card)
+	if err != nil {
+		t.Errorf("got error when creating a payment method: %v", err)
+		return
+	}
+
+	piRes, err := stripego.UpdateMethodPaymentIntent(StripeSK, PaymentIntentID, pm)
+	if err != nil {
+		t.Errorf("got error when updating payment intent: %v", err)
+		return
+	}
+
+	res := &stripe.PaymentIntent{}
+	err = json.Unmarshal(piRes.LastResponse.RawJSON, &res)
+	if err != nil {
+		t.Errorf("got error when unmarshalling payment intent: %v", err)
+		return
+	}
+
+	expected := &stripe.PaymentIntent{}
+	expected.ID = PaymentIntentID
+	expected.Object = PaymentIntentObject
+	expected.Status = stripe.PaymentIntentStatusRequiresConfirmation
 	expected.Amount = PaymentIntentAmount
 	expected.Currency = stripe.Currency(Currency)
 
