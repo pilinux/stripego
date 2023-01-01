@@ -10,7 +10,11 @@ import (
 	"github.com/stripe/stripe-go/v74"
 )
 
+var StripeSK string
+var Currency string
+var PaymentIntentObject string
 var PaymentIntentID string
+var PaymentIntentAmount int64
 
 func TestCreatePaymentIntent(t *testing.T) {
 	err := stripego.Env()
@@ -20,14 +24,16 @@ func TestCreatePaymentIntent(t *testing.T) {
 		)
 		return
 	}
-	sk := strings.TrimSpace(os.Getenv("STRIPE_SK"))
-	currency := strings.TrimSpace(os.Getenv("CURRENCY"))
+	StripeSK = strings.TrimSpace(os.Getenv("STRIPE_SK"))
+	Currency = strings.TrimSpace(os.Getenv("CURRENCY"))
+	PaymentIntentObject = "payment_intent"
+	PaymentIntentAmount = 1000
 
 	piReq := stripe.PaymentIntentParams{}
-	piReq.Amount = stripe.Int64(1000)
-	piReq.Currency = stripe.String(currency)
+	piReq.Amount = stripe.Int64(PaymentIntentAmount)
+	piReq.Currency = stripe.String(Currency)
 
-	piRes, err := stripego.CreatePaymentIntent(sk, piReq)
+	piRes, err := stripego.CreatePaymentIntent(StripeSK, piReq)
 	if err != nil {
 		t.Errorf(
 			"got error when creating payment intent: %v", err,
@@ -44,10 +50,10 @@ func TestCreatePaymentIntent(t *testing.T) {
 	}
 
 	expected := &stripe.PaymentIntent{}
-	expected.Object = "payment_intent"
+	expected.Object = PaymentIntentObject
 	expected.Status = stripe.PaymentIntentStatusRequiresPaymentMethod
-	expected.Amount = *piReq.Amount
-	expected.Currency = stripe.Currency(*piReq.Currency)
+	expected.Amount = PaymentIntentAmount
+	expected.Currency = stripe.Currency(Currency)
 
 	if res.Object != expected.Object {
 		t.Errorf("got: %v, want: %v", res.Object, expected.Object)
@@ -64,17 +70,7 @@ func TestCreatePaymentIntent(t *testing.T) {
 }
 
 func TestCancelPaymentIntent(t *testing.T) {
-	err := stripego.Env()
-	if err != nil {
-		t.Errorf(
-			"failed to load .env: %v", err,
-		)
-		return
-	}
-	sk := strings.TrimSpace(os.Getenv("STRIPE_SK"))
-	paymentIntentID := PaymentIntentID
-
-	piRes, err := stripego.CancelPaymentIntent(sk, paymentIntentID)
+	piRes, err := stripego.CancelPaymentIntent(StripeSK, PaymentIntentID)
 	if err != nil {
 		t.Errorf(
 			"got error when canceling payment intent: %v", err,
@@ -90,9 +86,11 @@ func TestCancelPaymentIntent(t *testing.T) {
 	}
 
 	expected := &stripe.PaymentIntent{}
-	expected.ID = paymentIntentID
-	expected.Object = "payment_intent"
+	expected.ID = PaymentIntentID
+	expected.Object = PaymentIntentObject
 	expected.Status = stripe.PaymentIntentStatusCanceled
+	expected.Amount = PaymentIntentAmount
+	expected.Currency = stripe.Currency(Currency)
 
 	if res.ID != expected.ID {
 		t.Errorf("got: %v, want: %v", res.ID, expected.ID)
@@ -102,5 +100,11 @@ func TestCancelPaymentIntent(t *testing.T) {
 	}
 	if res.Status != expected.Status {
 		t.Errorf("got: %v, want: %v", res.Status, expected.Status)
+	}
+	if res.Amount != expected.Amount {
+		t.Errorf("got: %v, want: %v", res.Amount, expected.Amount)
+	}
+	if res.Currency != expected.Currency {
+		t.Errorf("got: %v, want: %v", res.Currency, expected.Currency)
 	}
 }
