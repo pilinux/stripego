@@ -69,6 +69,51 @@ func TestCreatePaymentIntent(t *testing.T) {
 	}
 }
 
+func TestUpdateAmountPaymentIntent(t *testing.T) {
+	PaymentIntentAmount = 500
+
+	piReq := stripe.PaymentIntentParams{}
+	piReq.Amount = stripe.Int64(PaymentIntentAmount)
+
+	piRes, err := stripego.UpdateAmountPaymentIntent(StripeSK, PaymentIntentID, piReq)
+	if err != nil {
+		t.Errorf(
+			"got error when updating payment intent: %v", err,
+		)
+		return
+	}
+
+	res := &stripe.PaymentIntent{}
+	err = json.Unmarshal(piRes.LastResponse.RawJSON, &res)
+	if err != nil {
+		t.Errorf("got error when unmarshalling payment intent: %v", err)
+		return
+	}
+
+	expected := &stripe.PaymentIntent{}
+	expected.ID = PaymentIntentID
+	expected.Object = PaymentIntentObject
+	expected.Status = stripe.PaymentIntentStatusRequiresPaymentMethod
+	expected.Amount = PaymentIntentAmount
+	expected.Currency = stripe.Currency(Currency)
+
+	if res.ID != expected.ID {
+		t.Errorf("got: %v, want: %v", res.ID, expected.ID)
+	}
+	if res.Object != expected.Object {
+		t.Errorf("got: %v, want: %v", res.Object, expected.Object)
+	}
+	if res.Status != expected.Status {
+		t.Errorf("got: %v, want: %v", res.Status, expected.Status)
+	}
+	if res.Amount != expected.Amount {
+		t.Errorf("got: %v, want: %v", res.Amount, expected.Amount)
+	}
+	if res.Currency != expected.Currency {
+		t.Errorf("got: %v, want: %v", res.Currency, expected.Currency)
+	}
+}
+
 func TestCancelPaymentIntent(t *testing.T) {
 	piRes, err := stripego.CancelPaymentIntent(StripeSK, PaymentIntentID)
 	if err != nil {

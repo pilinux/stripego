@@ -25,6 +25,21 @@ func CreatePaymentIntent(sk string, piReq stripe.PaymentIntentParams) (piRes *st
 	return
 }
 
+// UpdateAmountPaymentIntent - update the amount of an existing PaymentIntent object in stripe
+func UpdateAmountPaymentIntent(sk, paymentIntentID string, piReq stripe.PaymentIntentParams) (piRes *stripe.PaymentIntent, err error) {
+	// stripe secret key
+	stripe.Key = sk
+
+	// create PaymentIntentParams with amount
+	params := &stripe.PaymentIntentParams{
+		Amount: piReq.Amount,
+	}
+
+	// update the PaymentIntent
+	piRes, err = paymentintent.Update(paymentIntentID, params)
+	return
+}
+
 // CancelPaymentIntent - cancel an existing PaymentIntent object in stripe
 func CancelPaymentIntent(sk, paymentIntentID string) (piRes *stripe.PaymentIntent, err error) {
 	// stripe secret key
