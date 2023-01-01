@@ -10,6 +10,8 @@ import (
 	"github.com/stripe/stripe-go/v74"
 )
 
+var PaymentIntentID string
+
 func TestCreatePaymentIntent(t *testing.T) {
 	err := stripego.Env()
 	if err != nil {
@@ -32,6 +34,7 @@ func TestCreatePaymentIntent(t *testing.T) {
 		)
 		return
 	}
+	PaymentIntentID = piRes.ID
 
 	res := &stripe.PaymentIntent{}
 	err = json.Unmarshal(piRes.LastResponse.RawJSON, &res)
@@ -57,5 +60,47 @@ func TestCreatePaymentIntent(t *testing.T) {
 	}
 	if res.Currency != expected.Currency {
 		t.Errorf("got: %v, want: %v", res.Currency, expected.Currency)
+	}
+}
+
+func TestCancelPaymentIntent(t *testing.T) {
+	err := stripego.Env()
+	if err != nil {
+		t.Errorf(
+			"failed to load .env: %v", err,
+		)
+		return
+	}
+	sk := strings.TrimSpace(os.Getenv("STRIPE_SK"))
+	paymentIntentID := PaymentIntentID
+
+	piRes, err := stripego.CancelPaymentIntent(sk, paymentIntentID)
+	if err != nil {
+		t.Errorf(
+			"got error when canceling payment intent: %v", err,
+		)
+		return
+	}
+
+	res := &stripe.PaymentIntent{}
+	err = json.Unmarshal(piRes.LastResponse.RawJSON, &res)
+	if err != nil {
+		t.Errorf("got error when unmarshalling payment intent: %v", err)
+		return
+	}
+
+	expected := &stripe.PaymentIntent{}
+	expected.ID = paymentIntentID
+	expected.Object = "payment_intent"
+	expected.Status = stripe.PaymentIntentStatusCanceled
+
+	if res.ID != expected.ID {
+		t.Errorf("got: %v, want: %v", res.ID, expected.ID)
+	}
+	if res.Object != expected.Object {
+		t.Errorf("got: %v, want: %v", res.Object, expected.Object)
+	}
+	if res.Status != expected.Status {
+		t.Errorf("got: %v, want: %v", res.Status, expected.Status)
 	}
 }

@@ -24,3 +24,12 @@ func CreatePaymentIntent(sk string, piReq stripe.PaymentIntentParams) (piRes *st
 	piRes, err = paymentintent.New(params)
 	return
 }
+
+// CancelPaymentIntent - cancel an existing PaymentIntent object in stripe
+func CancelPaymentIntent(sk, paymentIntentID string) (piRes *stripe.PaymentIntent, err error) {
+	// stripe secret key
+	stripe.Key = sk
+
+	piRes, err = paymentintent.Cancel(paymentIntentID, nil)
+	return
+}
