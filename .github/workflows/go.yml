@@ -29,4 +29,7 @@ jobs:
           STRIPE_WH: ${{ secrets.STRIPE_WH }}
           CURRENCY: ${{ secrets.CURRENCY }}
           DESTINATION: ${{ secrets.DESTINATION }}
-        run: go test -v -cover ./...
+        run: go test -v -cover -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
