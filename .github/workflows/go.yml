@@ -5,28 +5,28 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
-    - name: Test
-      env:
-        STRIPE_SK: ${{ secrets.STRIPE_SK }}
-        STRIPE_WH: ${{ secrets.STRIPE_WH }}
-        CURRENCY: ${{ secrets.CURRENCY }}
-      run: go test -v -cover ./...
+      - name: Test
+        env:
+          STRIPE_SK: ${{ secrets.STRIPE_SK }}
+          STRIPE_WH: ${{ secrets.STRIPE_WH }}
+          CURRENCY: ${{ secrets.CURRENCY }}
+          DESTINATION: ${{ secrets.DESTINATION }}
+        run: go test -v -cover ./...
