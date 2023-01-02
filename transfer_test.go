@@ -15,22 +15,9 @@ var TransferObject string
 var TransferAmount int64
 
 func TestTransferBalance(t *testing.T) {
-	stripeSK, ok := os.LookupEnv("STRIPE_SK")
-	if !ok {
-		err := stripego.Env()
-		if err != nil {
-			t.Errorf("failed to load .env: %v", err)
-			return
-		}
-
-		StripeSK = strings.TrimSpace(os.Getenv("STRIPE_SK"))
-		Currency = strings.TrimSpace(os.Getenv("CURRENCY"))
-		Destination = strings.TrimSpace(os.Getenv("DESTINATION"))
-	} else {
-		StripeSK = strings.TrimSpace(stripeSK)
-		Currency = strings.TrimSpace(os.Getenv("CURRENCY"))
-		Destination = strings.TrimSpace(os.Getenv("DESTINATION"))
-	}
+	StripeSK = strings.TrimSpace(os.Getenv("STRIPE_SK"))
+	Currency = strings.TrimSpace(os.Getenv("CURRENCY"))
+	Destination = strings.TrimSpace(os.Getenv("DESTINATION"))
 
 	TransferObject = "transfer"
 	TransferAmount = 100
