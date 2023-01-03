@@ -48,6 +48,9 @@ go mod tidy
 ### Transfer
 
 - [x] transfer balance to a connected Stripe account
+
+### Transaction
+
 - [x] get details of a balance transaction
 
 ## Usage
