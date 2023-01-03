@@ -29,6 +29,7 @@ jobs:
           STRIPE_WH: ${{ secrets.STRIPE_WH }}
           CURRENCY: ${{ secrets.CURRENCY }}
           DESTINATION: ${{ secrets.DESTINATION }}
+          BALANCE_TRANSACTION_ID: ${{ secrets.BALANCE_TRANSACTION_ID }}
         run: go test -v -cover -coverprofile=coverage.txt -covermode=atomic ./...
 
       - name: Upload coverage to Codecov
