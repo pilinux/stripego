@@ -20,7 +20,7 @@ func TestTransferBalance(t *testing.T) {
 	Destination = strings.TrimSpace(os.Getenv("DESTINATION"))
 
 	TransferObject = "transfer"
-	TransferAmount = 100
+	TransferAmount = 1
 
 	tp := &stripe.TransferParams{
 		Amount:      stripe.Int64(TransferAmount),
