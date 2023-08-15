@@ -27,6 +27,9 @@ func TestCreatePaymentIntent(t *testing.T) {
 	piReq := stripe.PaymentIntentParams{}
 	piReq.Amount = stripe.Int64(PaymentIntentAmount)
 	piReq.Currency = stripe.String(Currency)
+	piReq.AutomaticPaymentMethods = &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+		Enabled: stripe.Bool(true),
+	}
 
 	piRes, err := stripego.CreatePaymentIntent(StripeSK, piReq)
 	if err != nil {

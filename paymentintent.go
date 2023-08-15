@@ -10,18 +10,8 @@ func CreatePaymentIntent(sk string, piReq stripe.PaymentIntentParams) (piRes *st
 	// stripe secret key
 	stripe.Key = sk
 
-	// create PaymentIntentParams with amount and currency
-	params := &stripe.PaymentIntentParams{
-		Amount:   piReq.Amount,
-		Currency: piReq.Currency,
-		// enable all payment methods
-		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
-			Enabled: stripe.Bool(true),
-		},
-	}
-
 	// create a PaymentIntent
-	piRes, err = paymentintent.New(params)
+	piRes, err = paymentintent.New(&piReq)
 	return
 }
 
